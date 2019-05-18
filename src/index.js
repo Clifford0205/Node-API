@@ -6,6 +6,7 @@ const multer = require('multer');
 const fs = require('fs');
 const cors = require('cors');
 const uuidv4 = require('uuid/v4');
+var sha1 = require('sha1');
 
 
 var app=express();
@@ -111,13 +112,15 @@ app.post('/member', upload.single('avatar'),(req,res)=>{
     data.body = body;
     
     let ext = '';
-    let fname = uuidv4();
+    // let fname = uuidv4();
+    
 
    
 
   
 
     if(req.file && req.file.originalname){
+        let fname=sha1(req.file.originalname)
         switch(req.file.mimetype){
           
             case 'image/png':
@@ -178,6 +181,7 @@ app.post('/member', upload.single('avatar'),(req,res)=>{
                 }else{
                  // console.log(err);
                  data.message.text='E-mail重複使用';
+                 console.log(err)
                  data.message.type='danger';
                  res.send(data);
                 };
@@ -304,8 +308,8 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
               
             default:
                 data.success=false;
-                data.message.info = '檔案格式不符';
-                data.message.text='檔案格式不符,資料修改失敗';
+                data.message.info = '圖片檔案格式不符';
+                data.message.text='圖片檔案格式不符';
                 res.send(data);
                 return;
         }
