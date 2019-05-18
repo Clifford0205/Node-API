@@ -149,6 +149,7 @@ app.post('/member', upload.single('avatar'),(req,res)=>{
                  // console.log(err);
                  data.message.text='E-mail重複使用';
                  data.message.type='danger';
+                 console.console(err)
                  res.send(data);
                 };
             });
@@ -234,6 +235,8 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
             info: '',
             'errorCode' : 0,
             file: ''
+
+            
         }
     };
     const body = req.body;
@@ -262,15 +265,35 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
                 var sql="UPDATE `member` SET ? WHERE `m_sid`=?";
                 mysqlConnection.query(sql,[body,req.params.id],(err,rows,fields)=>{
                 console.log(body);
+
+                      
                 if (rows) {
-                    data.success=true;
-                    data.message.type='success';
-                    data.message.text='資料修改成功';
-                    res.send(data);
+
+                    if(rows.message.changed==0){
+                        data.success=true;
+                        data.message.type='warning';
+                        data.message.text='資料沒有修改';
+                        console.log(err);
+                        res.send(data);
+                        return;
+                    }
+
+
+                    if(rows.changedRows!==0){
+                        data.success=true;
+                        data.message.type='success';
+                        data.message.text='資料修改成功';
+                        // res.json(rows)
+                        res.send(data);
+                        return;
+                    }
+                    
                 }else{
                  // console.log(err);
+                    data.success=true;
                     data.message.text='E-mail重複使用,資料修改失敗';
                     data.message.type='danger';
+                    console.log(err);
                     res.send(data);
                 };
             });
@@ -280,12 +303,50 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
 
               
             default:
+                data.success=false;
                 data.message.info = '檔案格式不符';
                 data.message.text='檔案格式不符,資料修改失敗';
                 res.send(data);
+                return;
         }
     } else {
         data.info = '沒有變更圖片';
+        var sql="UPDATE `member` SET ? WHERE `m_sid`=?";
+        mysqlConnection.query(sql,[body,req.params.id],(err,rows,fields)=>{
+        console.log(body);
+
+                // if(!err)
+                // res.send(rows)
+                // else
+                // console.log(err);
+        if (rows) {
+            if(rows.changedRows==0){
+                data.message.text='資料沒有修改';
+                console.log(err);
+                res.send(data);
+                return;
+            }
+            if(rows.changedRows!==0){
+            data.success=true;
+            console.log(err);
+            data.message.type='success';
+            data.message.text='資料修改成功';
+            // res.json(rows)
+            res.send(data);
+            return;
+        }
+        }else{
+         // console.log(err);
+            data.success=false;
+            data.message.text='E-mail重複使用,資料修改失敗';
+            data.message.type='danger';
+            // console.log(req.params.id);
+            console.log(err);
+            res.send(data);
+        };
+    });
+
+       
     }
 
 
