@@ -6,6 +6,7 @@ const multer = require('multer');
 const fs = require('fs');
 const cors = require('cors');
 const uuidv4 = require('uuid/v4');
+const session = require('express-session');
 var sha1 = require('sha1');
 
 
@@ -31,6 +32,15 @@ var corsOptions = {
     }
 };
 app.use(cors(corsOptions));
+
+app.use(session({
+    saveUninitialized:false,
+    resave:false,
+    secret:'dfhbdfgergerh2654151her',
+    cookie:{
+        maxAge:20*60000,
+    }
+}));
 
 
 
