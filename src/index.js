@@ -16,6 +16,8 @@ app.use(bodyparser.urlencoded({extended: false}));
 // 查看 HTTP HEADER 的 Content-Type: application/json
 app.use(bodyparser.json());
 
+app.use(express.static('public'))
+
 
 var whitelist = ['http://localhost:5555', 'http:// 192.168.1.111:5555', undefined,'http://localhost:3000'];
 var corsOptions = {
@@ -54,7 +56,7 @@ mysqlConnection.connect((err)=>{
 })
 
 
-//拿到所有會員資料
+// 拿到所有會員資料
 app.get('/member',(req,res)=>{
     mysqlConnection.query('SELECT*FROM member',(err,rows,fields)=>{
 
@@ -128,10 +130,11 @@ app.post('/member', upload.single('avatar'),(req,res)=>{
                 }
                 console.log(req.file.mimetype);
                 fs.createReadStream(req.file.path)
-                    .pipe(fs.createWriteStream(__dirname + '/../public/img/' + fname + ext));
-
+                    .pipe(fs.createWriteStream(  __dirname +'../public/img/' + fname + ext));
+                    // __dirname +
+                    // /../public/img/
             
-                data.message.file='/img/' + fname + ext;
+                data.message.file='http://localhost:5555/img/' + fname + ext;
                 data.info = '圖片上傳成功'
                 req.body.m_photo=data.message.file;
 
@@ -262,17 +265,31 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
                 var sql="UPDATE `member` SET ? WHERE `m_sid`=?";
                 mysqlConnection.query(sql,[body,req.params.id],(err,rows,fields)=>{
                 console.log(body);
-                if (rows) {
+                
+
+                    if(rows.changedRows==0){
+                    data.success=true;
+                    data.message.type='warning';
+                    data.message.text='資料沒有修改';
+                    res.send(data);
+                    return;
+                };
+                    if(rows.changedRows!==0){
                     data.success=true;
                     data.message.type='success';
                     data.message.text='資料修改成功';
                     res.send(data);
-                }else{
-                 // console.log(err);
+                    return;
+                    };
+                 
+                    if(err){
                     data.message.text='E-mail重複使用,資料修改失敗';
                     data.message.type='danger';
                     res.send(data);
-                };
+                    console.log(err);
+                }
+                
+                
             });
 
             return;
@@ -286,6 +303,35 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
         }
     } else {
         data.info = '沒有變更圖片';
+        var sql="UPDATE `member` SET ? WHERE `m_sid`=?";
+        mysqlConnection.query(sql,[body,req.params.id],(err,rows,fields)=>{
+        console.log(body);
+      
+        if(rows.changedRows==0){
+            data.success=true;
+            data.message.type='warning';
+            data.message.text='資料沒有修改';
+            res.send(data);
+            return;
+        };
+            if(rows.changedRows!==0){
+            data.success=true;
+            data.message.type='success';
+            data.message.text='資料修改成功';
+            res.send(data);
+            return;
+            };
+         
+            if(err){
+            data.message.text='E-mail重複使用,資料修改失敗';
+            data.message.type='danger';
+            res.send(data);
+            console.log(err);
+        }
+        
+    });
+
+    return;
     }
 
 
