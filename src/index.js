@@ -120,6 +120,7 @@ app.post('/member', upload.single('avatar'),(req,res)=>{
   
 
     if(req.file && req.file.originalname){
+        let myUrl='http://localhost:5555';
         switch(req.file.mimetype){
           
             case 'image/png':
@@ -130,11 +131,11 @@ app.post('/member', upload.single('avatar'),(req,res)=>{
                 }
                 console.log(req.file.mimetype);
                 fs.createReadStream(req.file.path)
-                    .pipe(fs.createWriteStream(  __dirname +'../public/img/' + fname + ext));
+                    .pipe(fs.createWriteStream(  __dirname +'/../public/img/' + fname + ext));
                     // __dirname +
                     // /../public/img/
             
-                data.message.file='http://localhost:5555/img/' + fname + ext;
+                data.message.file=`${myUrl}/img/` + fname + ext;
                 data.info = '圖片上傳成功'
                 req.body.m_photo=data.message.file;
 
@@ -246,6 +247,7 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
     let fname = uuidv4();
 
     if(req.file && req.file.originalname){
+        let myUrl='http://localhost:5555';
         switch(req.file.mimetype){
             case 'image/png':
                 ext = '.png';
@@ -258,7 +260,7 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
                     .pipe(fs.createWriteStream(__dirname + '/../public/img/' + fname + ext));
 
             
-                data.message.file='/img/' + fname + ext;
+                data.message.file=`${myUrl}/img/` + fname + ext;
                 data.message.info = '圖片上傳成功'
                 req.body.m_photo=data.message.file;
 
