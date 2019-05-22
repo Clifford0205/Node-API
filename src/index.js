@@ -36,6 +36,7 @@ app.use(cors(corsOptions));
 
 
 
+
 const upload = multer({dest: 'tmp_uploads/'});
 
 app.use(session({
@@ -374,7 +375,10 @@ app.post('/login',(req,res)=>{
             type: 'danger',           
             text: '',
             info: '',
-            views:''
+            views:'',
+            loginUser:'',
+            isLogined:'',
+
         }
     };
 
@@ -401,12 +405,13 @@ app.post('/login',(req,res)=>{
                     data.success=true;
                     data.message.type='success';
                     data.message.text='登入成功';
+                    data.message.loginUser=req.session.loginUser;
+                    data.message.isLogined=req.session.isLogined;
                     res.send(data);
                 }
                 
                 else{
                     req.session.isLogined = false;
-
                     data.success=false;
                     data.message.type='danger';
                     data.message.text='帳號或密碼錯誤';
@@ -417,6 +422,7 @@ app.post('/login',(req,res)=>{
     })
 });
 
+//查看是否是登入狀態
 app.get('/is_logined', (req, res)=>{
     res.json({
         loginUser: req.session.loginUser,
