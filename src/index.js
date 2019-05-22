@@ -6,6 +6,7 @@ const multer = require('multer');
 const fs = require('fs');
 const cors = require('cors');
 const uuidv4 = require('uuid/v4');
+const session = require('express-session');
 
 
 var app=express();
@@ -36,6 +37,15 @@ app.use(cors(corsOptions));
 
 
 const upload = multer({dest: 'tmp_uploads/'});
+
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret: 'sdgdsf ;ldkfg;ld',
+    cookie: {
+        maxAge: 600000
+    }
+}));
 
 
 
@@ -353,6 +363,91 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
 
 
 });
+
+
+// 會員登入
+
+app.post('/login',(req,res)=>{
+    const data = {
+        success: false,
+        message: {
+            type: 'danger',           
+            text: '',
+            info: '',
+            views:''
+        }
+    };
+
+
+    console.log(req.body);
+    // res.json(req.body); //----
+
+    const body = req.body;
+    data.body = body;
+    
+    var sql="SELECT * FROM `member` WHERE `m_email`=? AND `m_password`=?";
+    mysqlConnection.query(sql,[body.m_email,body.m_password],(err,rows,fields)=>{
+
+       
+
+                if(rows[0]){
+                    req.session.views = req.session.views || 0;
+                    req.session.views++;
+
+                    req.session.loginUser = body.m_email;
+                    req.session.isLogined = true;
+
+                    data.message.views= req.session.views;
+                    data.success=true;
+                    data.message.type='success';
+                    data.message.text='登入成功';
+                    res.send(data);
+                }
+                
+                else{
+                    req.session.isLogined = false;
+
+                    data.success=false;
+                    data.message.type='danger';
+                    data.message.text='帳號或密碼錯誤';
+                    res.send(data);
+                // console.log(err)
+            }
+                
+    })
+});
+
+app.get('/is_logined', (req, res)=>{
+    res.json({
+        loginUser: req.session.loginUser,
+        isLogined: req.session.isLogined
+    });
+});
+//檢查是否為會員
+// User.getUserNumByName = function getUserNumByName(username, callback) {
+//     //使用username 來檢查是否有資料
+
+//      var cmd = “select COUNT(1) AS num from user info where username = ?";
+//      connection.query(cmd, [username], function (err, result) {
+//          if (err) {
+//              return;
+//          }
+//          connection.release();
+//          //查詢結果使用 callback 呼叫，並將 err, result 參數帶入
+//          callback(err,result);                    
+//      });       
+// };
+// //透過帳號取得使用者資料
+// User.getUserByUserName = function getUserNumByName(username, callback) {
+//      var cmd = “select * from userinfo where username = ?";
+//      connection.query(cmd, [username], function (err, result) {
+//          if (err) {
+//              return;
+//          }
+//          connection.release();
+//          callback(err,result);                    
+//      });       
+//  };
 
 
 
