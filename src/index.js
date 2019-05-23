@@ -378,6 +378,8 @@ app.post('/login',(req,res)=>{
             views:'',
             loginUser:'',
             isLogined:'',
+            user_id:'',
+           
 
         }
     };
@@ -397,9 +399,12 @@ app.post('/login',(req,res)=>{
                 if(rows[0]){
                     req.session.views = req.session.views || 0;
                     req.session.views++;
-
+                    var id=rows[0].m_sid;
+                    
                     req.session.loginUser = body.m_email;
+                    req.session.user_id=rows[0].m_sid.toString();
                     req.session.isLogined = true;
+                    
 
                     data.message.views= req.session.views;
                     data.success=true;
@@ -407,6 +412,8 @@ app.post('/login',(req,res)=>{
                     data.message.text='登入成功';
                     data.message.loginUser=req.session.loginUser;
                     data.message.isLogined=req.session.isLogined;
+                    data.message.user_id=req.session.user_id;
+                    
                     res.send(data);
                 }
                 
@@ -426,8 +433,21 @@ app.post('/login',(req,res)=>{
 app.get('/is_logined', (req, res)=>{
     res.json({
         loginUser: req.session.loginUser,
+        user_id:req.session.user_id,
         isLogined: req.session.isLogined
     });
+});
+
+//登出
+app.get(('/logout'),(req,res)=>{
+    
+    req.session.destroy();
+    res.json({
+        loginUser: '',
+        isLogined: '',
+        user_id:'',
+    })
+    
 });
 //檢查是否為會員
 // User.getUserNumByName = function getUserNumByName(username, callback) {
