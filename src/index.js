@@ -403,6 +403,8 @@ app.post('/login',(req,res)=>{
                     
                     req.session.loginUser = body.m_email;
                     req.session.user_id=rows[0].m_sid.toString();
+                    req.session.m_name=rows[0].m_name;
+                    req.session.m_photo=rows[0].m_photo;
                     req.session.isLogined = true;
                     
 
@@ -434,7 +436,9 @@ app.get('/is_logined', (req, res)=>{
     res.json({
         loginUser: req.session.loginUser,
         user_id:req.session.user_id,
-        isLogined: req.session.isLogined
+        isLogined: req.session.isLogined,
+        session_name: req.session.m_name,
+        session_photo: req.session.m_photo,
     });
 });
 
