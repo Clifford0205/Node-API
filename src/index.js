@@ -44,7 +44,7 @@ app.use(session({
     resave: false,
     secret: 'sdgdsf ;ldkfg;ld',
     cookie: {
-        maxAge: 600000
+        maxAge: 1800000
     }
 }));
 
@@ -288,6 +288,7 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
                     return;
                 };
                     if(rows.changedRows!==0){
+                   
                     data.success=true;
                     data.message.type='success';
                     data.message.text='資料修改成功';
@@ -328,6 +329,7 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
             return;
         };
             if(rows.changedRows!==0){
+           
             data.success=true;
             data.message.type='success';
             data.message.text='資料修改成功';
