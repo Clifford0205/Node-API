@@ -292,6 +292,8 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
                     data.success=true;
                     data.message.type='success';
                     data.message.text='資料修改成功';
+                    req.session.m_name=data.body.m_name;
+                    req.session.m_photo=data.body.m_photo;
                     res.send(data);
                     return;
                     };
@@ -329,10 +331,13 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
             return;
         };
             if(rows.changedRows!==0){
+
+               
            
             data.success=true;
             data.message.type='success';
             data.message.text='資料修改成功';
+            req.session.m_name=data.body.m_name;
             res.send(data);
             return;
             };
