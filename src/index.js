@@ -131,7 +131,7 @@ app.post('/member', upload.single('avatar'),(req,res)=>{
   
 
     if(req.file && req.file.originalname){
-        let myUrl='http://localhost:5555';
+        let myUrl='http://localhost:5000';
         switch(req.file.mimetype){
           
             case 'image/png':
@@ -258,7 +258,7 @@ app.put('/member/:id', upload.single('avatar'),(req,res)=>{
     let fname = uuidv4();
 
     if(req.file && req.file.originalname){
-        let myUrl='http://localhost:5555';
+        let myUrl='http://localhost:5000';
         switch(req.file.mimetype){
             case 'image/png':
                 ext = '.png';
@@ -482,7 +482,7 @@ app.get(('/logout'),(req,res)=>{
 
 
 
-app.listen(5555, ()=>{
+app.listen(5000, ()=>{
     console.log('server running');
 });
 
