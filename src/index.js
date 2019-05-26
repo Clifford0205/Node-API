@@ -401,9 +401,14 @@ app.post('/login',(req,res)=>{
     var sql="SELECT * FROM `member` WHERE `m_email`=? AND `m_password`=?";
     mysqlConnection.query(sql,[body.m_email,body.m_password],(err,rows,fields)=>{
 
-       
 
-                if(rows[0]){
+
+                if(rows[0].m_active=="停權"){
+                    res.json({"WARNING":"您的帳號已被停權"});
+                    return;
+                }
+
+                if(rows[0].m_active=="正常"){
                     req.session.views = req.session.views || 0;
                     req.session.views++;
                     var id=rows[0].m_sid;
