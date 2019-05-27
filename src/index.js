@@ -428,6 +428,7 @@ app.post('/login',(req,res)=>{
                     req.session.user_id=rows[0].m_sid.toString();
                     req.session.m_name=rows[0].m_name;
                     req.session.m_photo=rows[0].m_photo;
+                    req.session.m_collect=rows[0].m_collect;
                     req.session.isLogined = true;
                     
 
@@ -464,6 +465,7 @@ app.get('/is_logined', (req, res)=>{
         isLogined: req.session.isLogined,
         session_name: req.session.m_name,
         session_photo: req.session.m_photo,
+        session_collect:req.session.m_collect,
     });
 });
 
@@ -503,6 +505,99 @@ app.get(('/logout'),(req,res)=>{
 //          callback(err,result);                    
 //      });       
 //  };
+
+// 拿到所有課程資料
+app.get('/course', (req, res) => {
+    mysqlConnection.query('SELECT * FROM course', (err, rows, fields) => {
+      for (let s in rows) {
+        rows[s].c_courseDate = moment(rows[s].c_courseDate).format('YYYY-MM-DD')
+        rows[s].c_startDate = moment(rows[s].c_startDate).format('YYYY-MM-DD')
+        rows[s].c_endDate = moment(rows[s].c_endDate).format('YYYY-MM-DD')
+      }
+  
+      if (!err) res.send(rows)
+      else console.log(err)
+    })
+  })
+  
+  // 拿到一個課程的資料
+  app.get('/course/:id', (req, res) => {
+    mysqlConnection.query(
+      'SELECT * FROM course WHERE c_sid = ?',
+      [req.params.id],
+      (err, rows, fields) => {
+        for (let s in rows) {
+          rows[s].c_courseDate = moment(rows[s].c_courseDate).format('YYYY-MM-DD')
+          rows[s].c_startDate = moment(rows[s].c_startDate).format('YYYY-MM-DD')
+          rows[s].c_endDate = moment(rows[s].c_endDate).format('YYYY-MM-DD')
+        }
+        if (!err) res.send(rows)
+        else console.log(err)
+      }
+    )
+  })
+
+//更新收藏
+app.put('/collect',(req,res)=>{
+    const data = {
+        success: false,
+        message: {
+            type: 'danger',           
+            text: '',
+            info: '',
+            views:'',
+            loginUser:'',
+            isLogined:'',
+            user_id:'',
+           
+
+        }
+    };
+
+    console.log(req.body);
+    const body = req.body;
+    // data.body = body;
+    
+    var sql="UPDATE `member` SET `m_collect`=? WHERE `m_sid`=?";
+    mysqlConnection.query(sql,[body.sid,body.user_id],(err,rows,fields)=>{
+        if(!err)
+        res.send(rows);
+         else
+         console.log(err);
+    })
+
+})
+
+//拿到收藏的文章
+app.post('/myCollect',(req,res)=>{
+
+    
+
+    console.log(req.body.arr);
+    // const body = req.body;
+    // data.body = body;
+    
+
+    var sql="SELECT * FROM `course` WHERE "
+    for (let i=0 ; i< req.body.arr.length;i++){
+        if (i === 0) {
+            sql += `c_sid = ` + req.body.arr[i];
+        } else {
+            sql +=  ` OR c_sid = ` + req.body.arr[i];
+        }
+    }
+    console.log(sql);
+    
+    // res.send(sql);
+    mysqlConnection.query(sql,(err,rows,fields)=>{
+
+        if(!err)       
+        res.send(rows)
+        else
+        console.log(err);
+    })
+});
+
 
 
 
