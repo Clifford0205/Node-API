@@ -401,8 +401,19 @@ app.post('/login',(req,res)=>{
     var sql="SELECT * FROM `member` WHERE `m_email`=? AND `m_password`=?";
     mysqlConnection.query(sql,[body.m_email,body.m_password],(err,rows,fields)=>{
 
+        // if(!err)
+        // res.send(rows)
+        // else
+        // console.log(err);
+               
+                // if(rows[0].m_active=="停權"){
+                //     res.json({"WARNING":"您的帳號已被停權"});
+                //     return;
+                // }
 
+                if(rows[0]){
 
+                    
                 if(rows[0].m_active=="停權"){
                     res.json({"WARNING":"您的帳號已被停權"});
                     return;
@@ -429,6 +440,8 @@ app.post('/login',(req,res)=>{
                     data.message.user_id=req.session.user_id;
                     
                     res.send(data);
+                    return;
+                    }
                 }
                 
                 else{
@@ -437,7 +450,7 @@ app.post('/login',(req,res)=>{
                     data.message.type='danger';
                     data.message.text='帳號或密碼錯誤';
                     res.send(data);
-                // console.log(err)
+                console.log(err)
             }
                 
     })
