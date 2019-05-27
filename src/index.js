@@ -428,7 +428,7 @@ app.post('/login',(req,res)=>{
                     req.session.user_id=rows[0].m_sid.toString();
                     req.session.m_name=rows[0].m_name;
                     req.session.m_photo=rows[0].m_photo;
-                    req.session.m_collect=rows[0].m_collect;
+                    req.session.c_course=rows[0].c_course;
                     req.session.isLogined = true;
                     
 
@@ -465,7 +465,7 @@ app.get('/is_logined', (req, res)=>{
         isLogined: req.session.isLogined,
         session_name: req.session.m_name,
         session_photo: req.session.m_photo,
-        session_collect:req.session.m_collect,
+        session_collect:req.session.c_course,
     });
 });
 
@@ -558,7 +558,7 @@ app.put('/collect',(req,res)=>{
     const body = req.body;
     // data.body = body;
     
-    var sql="UPDATE `member` SET `m_collect`=? WHERE `m_sid`=?";
+    var sql="UPDATE `member` SET `c_course`=? WHERE `m_sid`=?";
     mysqlConnection.query(sql,[body.sid,body.user_id],(err,rows,fields)=>{
         if(!err)
         res.send(rows);
