@@ -537,29 +537,17 @@ app.get('/course', (req, res) => {
     )
   })
 
-//更新收藏
+//更新收藏的課程
 app.put('/collect',(req,res)=>{
-    const data = {
-        success: false,
-        message: {
-            type: 'danger',           
-            text: '',
-            info: '',
-            views:'',
-            loginUser:'',
-            isLogined:'',
-            user_id:'',
-           
-
-        }
-    };
+    
 
     console.log(req.body);
     const body = req.body;
     // data.body = body;
     
     var sql="UPDATE `member` SET `c_course`=? WHERE `m_sid`=?";
-    mysqlConnection.query(sql,[body.sid,body.user_id],(err,rows,fields)=>{
+    mysqlConnection.query(sql,[JSON.stringify(body.sid),body.user_id],(err,rows,fields)=>{
+       
         if(!err)
         res.send(rows);
          else
@@ -568,7 +556,7 @@ app.put('/collect',(req,res)=>{
 
 })
 
-//拿到收藏的文章
+//拿到收藏的課程
 app.post('/myCollect',(req,res)=>{
 
     
@@ -590,6 +578,11 @@ app.post('/myCollect',(req,res)=>{
     
     // res.send(sql);
     mysqlConnection.query(sql,(err,rows,fields)=>{
+        for (let s in rows) {
+            rows[s].c_courseDate = moment(rows[s].c_courseDate).format('YYYY-MM-DD')
+            rows[s].c_startDate = moment(rows[s].c_startDate).format('YYYY-MM-DD')
+            rows[s].c_endDate = moment(rows[s].c_endDate).format('YYYY-MM-DD')
+          }
 
         if(!err)       
         res.send(rows)
@@ -599,6 +592,28 @@ app.post('/myCollect',(req,res)=>{
 });
 
 
+//刪除收藏的課程
+
+// app.put('/collect',(req,res)=>{
+//     const data = {
+//        body:{
+
+//        }
+//     };
+
+//     console.log(req.body);
+//     const body = req.body;
+//     // data.body = body;
+    
+//     var sql="UPDATE `member` SET `c_course`=? WHERE `m_sid`=?";
+//     mysqlConnection.query(sql,[body.sid,body.user_id],(err,rows,fields)=>{
+//         if(!err)
+//         res.send(rows);
+//          else
+//          console.log(err);
+//     })
+
+// })
 
 
 
